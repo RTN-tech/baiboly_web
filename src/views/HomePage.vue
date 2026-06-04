@@ -63,16 +63,12 @@ function toggleTestament(t) {
         <h1 class="hero-title" style="animation-delay: 0.15s">Ny Baiboly Masina</h1>
         <p class="hero-subtitle" style="animation-delay: 0.25s">Vakio ny tenin'Andriamanitra amin'ny fiteny malagasy</p>
 
-        <!-- Search Button -->
-        <div class="hero-search" style="animation-delay: 0.35s">
-          <button class="hero-search-btn" @click="goToSearch" title="Hikaroka andininy">
-            <svg class="search-btn-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <span class="search-btn-text">Hikaroka andininy</span>
-            <kbd class="search-btn-kbd">Ctrl+K</kbd>
-          </button>
-        </div>
+        <!-- Search Icon -->
+        <button class="search-fab" @click="goToSearch" title="Hikaroka andininy (Ctrl+K)" style="animation-delay: 0.35s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </button>
 
         <!-- Quick Jump -->
         <div class="hero-jump" style="animation-delay: 0.45s">
@@ -255,88 +251,36 @@ function toggleTestament(t) {
   }
 }
 
-/* Hero Search Button */
-.hero-search {
-  max-width: 480px;
-  margin: 0 auto 36px;
-  animation: heroEnter 0.5s ease both;
-}
-
-.hero-search-btn {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 16px 20px;
-  background: var(--hero-search-bg);
-  border: 2px solid var(--hero-search-border);
-  border-radius: 16px;
-  color: var(--hero-search-icon);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
-  text-align: left;
-  font-family: 'Inter', sans-serif;
-}
-
-.hero-search-btn:hover {
-  border-color: var(--border-search-focus);
-  background: var(--hero-search-bg-focus);
-  box-shadow: var(--hero-search-shadow);
-  transform: translateY(-2px);
-}
-
-.hero-search-btn:active {
-  transform: translateY(-1px) scale(0.99);
-}
-
-.search-btn-icon {
+/* Search FAB icon */
+.search-fab {
+  position: absolute;
+  top: 20px;
+  right: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 44px;
   height: 44px;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, #d4af37, #c9a432);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  color: #1a1a2e;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  animation: heroEnter 0.5s ease both;
 }
 
-.search-btn-text {
-  flex: 1;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--hero-search-input);
+.search-fab:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.35);
+  color: #d4af37;
+  transform: translateY(-2px) scale(1.05);
 }
 
-.search-btn-kbd {
-  display: none;
-  padding: 4px 8px;
-  background: var(--bg-card-hover);
-  border: 1px solid var(--hero-search-border);
-  border-radius: 6px;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--hero-search-placeholder);
-  flex-shrink: 0;
-  letter-spacing: 0.02em;
-}
-
-@media (min-width: 640px) {
-  .search-btn-kbd {
-    display: inline-flex;
-    align-items: center;
-  }
-}
-
-.hero-search-btn:hover .search-btn-icon {
-  animation: searchPulse 0.6s ease;
-}
-
-@keyframes searchPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+.search-fab:active {
+  transform: translateY(-1px) scale(0.97);
 }
 
 /* Bookmark Link */
