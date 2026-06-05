@@ -9,9 +9,11 @@ const { isIndexing, indexingProgress, indexReady, buildIndex, search } = useSear
 
 const searchQuery = ref('')
 const results = ref([])
+const allResults = ref([]) // Store unfiltered results
 const totalResults = ref(0)
 const hasSearched = ref(false)
 const searchInput = ref(null)
+const searchFilter = ref('') // '' = all, 'taloha' = OT, 'vaovao' = NT
 
 function parseQueryFromURL() {
   const q = route.query.q
@@ -22,10 +24,13 @@ function parseQueryFromURL() {
   return ''
 }
 
+let lastSearchResult = null // Cache last search data
+
 async function performSearch() {
   const q = searchQuery.value.trim()
   if (q.length < 2) {
     results.value = []
+    allResults.value = []
     totalResults.value = 0
     hasSearched.value = false
     router.replace({ query: {} })
@@ -39,9 +44,22 @@ async function performSearch() {
   }
 
   const searchResult = search(q)
-  results.value = searchResult.results
-  totalResults.value = searchResult.total
+  lastSearchResult = searchResult
+  allResults.value = searchResult.results
+
+  applyFilter()
   hasSearched.value = true
+}
+
+function applyFilter() {
+  if (!searchFilter.value || !allResults.value.length) {
+    results.value = allResults.value
+    totalResults.value = allResults.value.reduce((sum, g) => sum + g.verses.length, 0)
+    return
+  }
+  const filtered = allResults.value.filter(g => g.testament === searchFilter.value)
+  results.value = filtered
+  totalResults.value = filtered.reduce((sum, g) => sum + g.verses.length, 0)
 }
 
 function goToVerse(bookId, chapter, verse) {
@@ -156,6 +174,13 @@ watch(() => route.query.q, (newQ) => {
         <h2>Tsy nisy valiny</h2>
         <p>Tsy nisy andininy hitanay tamin'ny teny <strong>"{{ searchQuery }}"</strong></p>
         <p class="hint">Andramo amin'ny teny hafa</p>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div v-if="hasSearched && totalResults > 0" class="search-filters">
+        <button :class="['filter-btn', { active: searchFilter === '' }]" @click="searchFilter = ''; applyFilter()">Rehetra</button>
+        <button :class="['filter-btn', { active: searchFilter === 'taloha' }]" @click="searchFilter = 'taloha'; applyFilter()">Testameta Taloha</button>
+        <button :class="['filter-btn', { active: searchFilter === 'vaovao' }]" @click="searchFilter = 'vaovao'; applyFilter()">Testameta Vaovao</button>
       </div>
 
       <!-- Results -->
@@ -451,6 +476,39 @@ watch(() => route.query.q, (newQ) => {
   color: var(--color-text-tertiary);
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+/* Search Filters */
+.search-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg-card);
+  color: var(--color-text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  border-color: var(--border-accent);
+  color: #d4af37;
+}
+
+.filter-btn.active {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.3);
+  color: #d4af37;
+  font-weight: 600;
 }
 
 /* Book Group */

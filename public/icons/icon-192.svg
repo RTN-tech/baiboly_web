@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <!-- Background (fill the entire icon area for both any and maskable) -->
+  <rect width="192" height="192" rx="40" fill="#1a1a2e"/>
+
+  <!-- Maskable safe zone: the icon stays inside the inner ~72px radius circle
+       (safe area is the central 60% = 115px) -->
+  <g transform="translate(48, 36)" fill="none" stroke="#d4af37" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Open book -->
+    <path d="M8 120A12 12 0 0 1 20 108H88V8H20A12 12 0 0 0 8 20v100z"/>
+    <path d="M88 8h24v112H20A12 12 0 0 0 8 120"/>
+    <!-- Book lines -->
+    <line x1="28" y1="40" x2="72" y2="40"/>
+    <line x1="28" y1="60" x2="64" y2="60"/>
+    <line x1="28" y1="80" x2="56" y2="80"/>
+  </g>
+</svg>

@@ -4,9 +4,29 @@ import { useRouter } from 'vue-router'
 import { books } from '../data/books.js'
 import { useBookmarks } from '../composables/useBookmarks.js'
 import { useScrollReveal } from '../composables/useScrollReveal.js'
+import DownloadButton from '../components/DownloadButton.vue'
+import VerseOfTheDay from '../components/VerseOfTheDay.vue'
+import { useReadingProgress } from '../composables/useReadingProgress.js'
 
 const router = useRouter()
 const { bookmarkCount } = useBookmarks()
+const { lastRead, hasProgress } = useReadingProgress()
+
+function continueReading() {
+  if (!lastRead.value) return
+  router.push({
+    name: 'Read',
+    params: { bookId: lastRead.value.bookId, chapter: lastRead.value.chapter.toString() },
+    query: lastRead.value.verse > 1 ? { v: lastRead.value.verse.toString() } : {}
+  })
+}
+
+function goToRandomVerse() {
+  const bookIdx = Math.floor(Math.random() * books.length)
+  const book = books[bookIdx]
+  const chapter = Math.floor(Math.random() * book.chapters) + 1
+  router.push({ name: 'Read', params: { bookId: book.id, chapter: chapter.toString() } })
+}
 const { targetRef: testamentRef, isVisible: testamentVisible } = useScrollReveal()
 
 function goToSearch() {
@@ -114,7 +134,41 @@ function toggleTestament(t) {
           <span>Marque-pages</span>
           <span v-if="bookmarkCount > 0" class="hero-bm-badge">{{ bookmarkCount }}</span>
         </button>
+
+        <!-- Continue Reading -->
+        <div v-if="hasProgress && lastRead" class="hero-continue" style="animation-delay: 0.72s">
+          <button class="continue-btn" @click="continueReading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <div class="continue-text">
+              <span class="continue-label">Hanohy hamaky</span>
+              <span class="continue-ref">{{ lastRead.bookName }} — Toko {{ lastRead.chapter }}</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Random Verse -->
+        <button class="hero-random-btn" style="animation-delay: 0.74s" @click="goToRandomVerse" title="Andininy kisendra">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/>
+          </svg>
+          <span>Andininy kisendra</span>
+        </button>
+
+        <!-- Download Button -->
+        <div class="hero-download" style="animation-delay: 0.76s">
+          <DownloadButton />
+        </div>
       </div>
+    </section>
+
+    <!-- Verse of the Day -->
+    <section class="votd-section">
+      <VerseOfTheDay />
     </section>
 
     <!-- Testament Tabs -->
@@ -281,6 +335,116 @@ function toggleTestament(t) {
 
 .search-fab:active {
   transform: translateY(-1px) scale(0.97);
+}
+
+/* Continue Reading */
+.hero-continue {
+  margin: 8px auto 4px;
+  max-width: 420px;
+  animation: heroEnter 0.5s ease both;
+}
+
+.continue-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 18px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 12px;
+  color: #d4af37;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+
+.continue-btn:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.1);
+}
+
+.continue-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.continue-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+}
+
+.continue-ref {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 2px;
+  opacity: 0.9;
+}
+
+.continue-btn svg:last-child {
+  transition: transform 0.3s ease;
+}
+
+.continue-btn:hover svg:last-child {
+  transform: translateX(3px);
+}
+
+/* Random Verse */
+.hero-random-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--hero-search-border);
+  border-radius: 20px;
+  color: var(--color-text-tertiary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: heroEnter 0.5s ease both;
+}
+
+.hero-random-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: rgba(212, 175, 55, 0.25);
+  color: #d4af37;
+  transform: translateY(-1px);
+}
+
+/* Download Area */
+.hero-download {
+  margin: 8px 0 8px;
+  display: flex;
+  justify-content: center;
+  animation: heroEnter 0.5s ease both;
+}
+
+/* Verse of the Day Section */
+.votd-section {
+  max-width: 700px;
+  margin: -16px auto 24px;
+  padding: 0 24px;
+  animation: heroEnter 0.6s ease both;
+  animation-delay: 0.3s;
+}
+
+@media (max-width: 640px) {
+  .votd-section {
+    padding: 0 16px;
+    margin: -8px auto 20px;
+  }
 }
 
 /* Bookmark Link */

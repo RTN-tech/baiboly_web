@@ -3,6 +3,14 @@ import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { books } from '../data/books.js'
 import { useBookmarks } from '../composables/useBookmarks.js'
+import DownloadButton from '../components/DownloadButton.vue'
+import FontSizeControl from '../components/FontSizeControl.vue'
+import VerseActions from '../components/VerseActions.vue'
+import SkeletonLoader from '../components/SkeletonLoader.vue'
+import { getBookData } from '../composables/useOfflineData.js'
+import { useReadingProgress } from '../composables/useReadingProgress.js'
+import { useReadingHistory } from '../composables/useReadingHistory.js'
+import { useFontSize } from '../composables/useFontSize.js'
 
 const props = defineProps({
   bookId: String,
@@ -12,6 +20,9 @@ const props = defineProps({
 const router = useRouter()
 const route = useRoute()
 const { isBookmarked, toggleBookmark, bookmarkCount } = useBookmarks()
+const { updateProgress } = useReadingProgress()
+const { addEntry } = useReadingHistory()
+useFontSize()
 
 const bookData = ref(null)
 const loading = ref(true)
@@ -19,6 +30,10 @@ const error = ref(null)
 const chListRef = ref(null)
 const currentChapter = ref(parseInt(props.chapter) || 1)
 const targetVerse = ref(null)
+const selectedVerse = ref(null)
+const showVerseActions = ref(false)
+const touchStartX = ref(0)
+const touchStartY = ref(0)
 
 const bookInfo = computed(() => books.find(b => b.id === props.bookId))
 
@@ -65,9 +80,15 @@ async function loadBook() {
   loading.value = true
   error.value = null
   try {
-    const response = await fetch(`/${bookInfo.value.file}`)
-    if (!response.ok) throw new Error('Tsy afaka namaky ilay boky')
-    bookData.value = await response.json()
+    // Try offline IndexedDB first (data downloaded via Télécharger)
+    bookData.value = await getBookData(props.bookId)
+
+    // Fall back to network fetch
+    if (!bookData.value) {
+      const response = await fetch(`/${bookInfo.value.file}`)
+      if (!response.ok) throw new Error('Tsy afaka namaky ilay boky')
+      bookData.value = await response.json()
+    }
   } catch (e) {
     error.value = e.message
   } finally {
@@ -93,6 +114,59 @@ watch(() => props.bookId, () => {
 watch(() => props.chapter, (val) => {
   currentChapter.value = parseInt(val) || 1
 })
+
+// Track reading progress and history when chapter content loads
+watch(chapterVerses, (verses) => {
+  if (verses.length > 0 && bookInfo.value) {
+    updateProgress(props.bookId, bookInfo.value.name, currentChapter.value, targetVerse.value || 1)
+    addEntry(props.bookId, bookInfo.value.name, currentChapter.value, targetVerse.value || 1)
+  }
+})
+
+function handleVerseClick(verseNum, verseText) {
+  selectedVerse.value = {
+    bookId: props.bookId,
+    bookName: bookInfo.value?.name || '',
+    chapter: currentChapter.value,
+    verse: verseNum,
+    text: verseText
+  }
+  showVerseActions.value = true
+}
+
+function onTouchStart(e) {
+  touchStartX.value = e.touches[0].clientX
+  touchStartY.value = e.touches[0].clientY
+}
+
+function onTouchEnd(e) {
+  const dx = e.changedTouches[0].clientX - touchStartX.value
+  const dy = e.changedTouches[0].clientY - touchStartY.value
+
+  // Only handle horizontal swipes (ignore vertical scrolling)
+  if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return
+
+  if (dx > 0 && prevChapter.value) {
+    // Swipe right → previous chapter
+    goToChapter(prevChapter.value)
+  } else if (dx < 0 && nextChapter.value) {
+    // Swipe left → next chapter
+    goToChapter(nextChapter.value)
+  }
+}
+
+function onKeydown(e) {
+  // Left arrow → previous chapter
+  if (e.key === 'ArrowLeft' && prevChapter.value) {
+    e.preventDefault()
+    goToChapter(prevChapter.value)
+  }
+  // Right arrow → next chapter
+  if (e.key === 'ArrowRight' && nextChapter.value) {
+    e.preventDefault()
+    goToChapter(nextChapter.value)
+  }
+}
 
 function scrollToVerse() {
   const verse = route.query.v
@@ -120,11 +194,12 @@ watch(chapterVerses, () => {
 onMounted(() => {
   currentChapter.value = parseInt(props.chapter) || 1
   loadBook()
+  window.addEventListener('keydown', onKeydown)
 })
 </script>
 
 <template>
-  <div class="reader-page">
+  <div class="reader-page" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
     <!-- Top Navigation Bar -->
     <nav class="reader-nav">
       <div class="nav-inner">
@@ -142,6 +217,8 @@ onMounted(() => {
         </div>
 
         <div class="nav-right">
+          <FontSizeControl compact />
+          <DownloadButton compact />
           <button class="nav-icon-btn" @click="router.push({ name: 'Bookmarks' })" :title="`Marque-pages (${bookmarkCount})`">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
@@ -216,6 +293,15 @@ onMounted(() => {
         <div v-else></div>
       </div>
 
+      <!-- Chapter Progress -->
+      <div class="chapter-progress">
+        <div class="cp-label">Toko {{ currentChapter }}</div>
+        <div class="cp-bar">
+          <div class="cp-fill" :style="{ width: `${(currentChapter / chapters.length) * 100}%` }"></div>
+        </div>
+        <div class="cp-count">{{ currentChapter }} / {{ chapters.length }}</div>
+      </div>
+
       <!-- Verses -->
       <div class="verses-container">
         <div class="chapter-title">
@@ -230,11 +316,12 @@ onMounted(() => {
               'verse-target': parseInt(verseNum) === targetVerse,
               'verse-bookmarked': isBookmarked(bookInfo.id, currentChapter, parseInt(verseNum))
             }]"
+            @click="handleVerseClick(parseInt(verseNum), verseText)"
           >
             <button
               class="verse-bookmark-btn"
               :class="{ active: isBookmarked(bookInfo.id, currentChapter, parseInt(verseNum)) }"
-              @click="toggleBookmark(bookInfo.id, currentChapter, parseInt(verseNum), {
+              @click.stop="toggleBookmark(bookInfo.id, currentChapter, parseInt(verseNum), {
                 bookName: bookInfo.name,
                 text: verseText
               })"
@@ -277,11 +364,23 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Loading -->
+    <!-- Loading (skeleton) -->
     <div class="loading-state" v-if="loading">
-      <div class="loader"></div>
-      <p>Am-panokafana ny boky...</p>
+      <SkeletonLoader type="text" lines="3" />
+      <div class="skeleton-spacer"></div>
+      <SkeletonLoader type="verse-row" :count="6" />
     </div>
+
+    <!-- Verse Actions Modal -->
+    <VerseActions
+      v-if="showVerseActions && selectedVerse"
+      :book-id="selectedVerse.bookId"
+      :book-name="selectedVerse.bookName"
+      :chapter="selectedVerse.chapter"
+      :verse="selectedVerse.verse"
+      :text="selectedVerse.text"
+      @close="showVerseActions = false; selectedVerse = null"
+    />
 
     <!-- Error -->
     <div class="error-state" v-if="error">
@@ -623,6 +722,66 @@ onMounted(() => {
 
 .verse.verse-highlight {
   animation: versePulse 3s ease;
+}
+
+/* Chapter Progress Bar */
+.chapter-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 8px 0;
+}
+
+.cp-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: fit-content;
+}
+
+.cp-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d4af37, #c9a032);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.cp-count {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+  min-width: fit-content;
+  white-space: nowrap;
+}
+
+/* Verse clickable */
+.verse {
+  cursor: pointer;
+}
+
+.verse:active {
+  background: rgba(212, 175, 55, 0.04);
+}
+
+.skeleton-spacer {
+  height: 40px;
+}
+
+.loading-state {
+  padding: 60px 20px;
 }
 
 @keyframes versePulse {

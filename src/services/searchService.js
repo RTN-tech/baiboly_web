@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { books } from '../data/books.js'
+import { getBookData } from '../composables/useOfflineData.js'
 
 const index = ref([])
 const isIndexing = ref(false)
@@ -20,9 +21,15 @@ async function buildIndex() {
 
     for (const book of books) {
       try {
-        const response = await fetch(`/${book.file}`)
-        if (!response.ok) throw new Error(`Failed to load ${book.file}`)
-        const data = await response.json()
+        // Try offline data first
+        let data = await getBookData(book.id)
+
+        // Fall back to network
+        if (!data) {
+          const response = await fetch(`/${book.file}`)
+          if (!response.ok) throw new Error(`Failed to load ${book.file}`)
+          data = await response.json()
+        }
 
         for (const [chapterNum, verses] of Object.entries(data)) {
           if (chapterNum === 'meta') continue

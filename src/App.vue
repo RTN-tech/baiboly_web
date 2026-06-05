@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import ThemeToggle from './components/ThemeToggle.vue'
+import InstallBadge from './components/InstallBadge.vue'
 import { useTheme } from './composables/useTheme.js'
 
 useTheme()
@@ -10,6 +11,7 @@ useTheme()
   <div class="app">
     <RouterView />
     <ThemeToggle />
+    <InstallBadge />
   </div>
 </template>
 

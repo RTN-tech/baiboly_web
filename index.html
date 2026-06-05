@@ -2,14 +2,115 @@
 <html lang="mg">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon-192.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Baiboly" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+    <link rel="apple-touch-startup-image" href="/icons/splash-ios.svg" />
     <title>Ny Baiboly Masina</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Splash screen styles (visible while the app loads) -->
+    <style>
+      .splash-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #1a1a2e;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+      .splash-screen.fade-out {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .splash-inner {
+        text-align: center;
+        animation: splashFadeIn 0.6s ease both;
+      }
+      @keyframes splashFadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .splash-icon {
+        margin-bottom: 24px;
+        animation: splashPulse 2s ease-in-out infinite;
+      }
+      @keyframes splashPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50%      { transform: scale(1.04); opacity: 0.85; }
+      }
+      .splash-title {
+        font-family: 'Playfair Display', 'Georgia', serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #f5f5f5;
+        margin: 0 0 8px;
+      }
+      .splash-subtitle {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.55);
+        font-weight: 300;
+        margin: 0 0 32px;
+      }
+      .splash-loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .splash-loader-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #d4af37;
+        animation: splashDot 1.2s ease-in-out infinite;
+      }
+      .splash-loader-dot:nth-child(2) { animation-delay: 0.2s; }
+      .splash-loader-dot:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes splashDot {
+        0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+        40%           { transform: scale(1);   opacity: 1; }
+      }
+    </style>
   </head>
   <body>
+    <!-- Custom splash / loading screen shown while Vue initialises -->
+    <!-- Placed OUTSIDE #app so Vue doesn't overwrite it on mount -->
+    <div class="splash-screen">
+      <div class="splash-inner">
+        <div class="splash-icon">
+          <svg width="72" height="72" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="192" height="192" rx="40" fill="#1a1a2e"/>
+            <g transform="translate(48, 36)" stroke="#d4af37" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 120A12 12 0 0 1 20 108H88V8H20A12 12 0 0 0 8 20v100z" fill="none"/>
+              <path d="M88 8h24v112H20A12 12 0 0 0 8 120" fill="none"/>
+              <line x1="28" y1="40" x2="72" y2="40"/>
+              <line x1="28" y1="60" x2="64" y2="60"/>
+              <line x1="28" y1="80" x2="56" y2="80"/>
+            </g>
+          </svg>
+        </div>
+        <h1 class="splash-title">Ny Baiboly Masina</h1>
+        <p class="splash-subtitle">Vakio ny tenin'Andriamanitra</p>
+        <div class="splash-loader">
+          <div class="splash-loader-dot"></div>
+          <div class="splash-loader-dot"></div>
+          <div class="splash-loader-dot"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>

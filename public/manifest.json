@@ -1,0 +1,46 @@
+{
+  "name": "Ny Baiboly Masina",
+  "short_name": "Baiboly",
+  "description": "Vakio ny tenin'Andriamanitra amin'ny fiteny malagasy — offline",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait-primary",
+  "lang": "mg",
+  "dir": "ltr",
+  "categories": ["books", "religion", "education"],
+  "scope": "/",
+  "id": "/",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "screenshots": [],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}
