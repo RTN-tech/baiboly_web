@@ -8,6 +8,8 @@ import DownloadButton from '../components/DownloadButton.vue'
 import VerseOfTheDay from '../components/VerseOfTheDay.vue'
 import { useReadingProgress } from '../composables/useReadingProgress.js'
 import { useLanguage } from '../composables/useLanguage.js'
+import LanguageToggle from '../components/LanguageToggle.vue'
+import AppInfo from '../components/AppInfo.vue'
 
 const router = useRouter()
 const { bookmarkCount } = useBookmarks()
@@ -70,6 +72,8 @@ function toggleTestament(val) {
 
 <template>
   <div class="home-page">
+    <AppInfo />
+    <LanguageToggle />
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-bg"></div>

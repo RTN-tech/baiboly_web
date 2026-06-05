@@ -1,20 +1,40 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useLanguage } from '../composables/useLanguage.js'
+import { useTheme } from '../composables/useTheme.js'
+import { useShareImage } from '../composables/useShareImage.js'
 
 const { t } = useLanguage()
+const { isDark } = useTheme()
+const { generating, shareAsImage } = useShareImage()
+
+const BOOKMARK_COLORS = {
+  gold: '#d4af37',
+  red: '#e74c3c',
+  blue: '#3498db',
+  green: '#2ecc71',
+  purple: '#9b59b6',
+  pink: '#e91e63'
+}
 
 const props = defineProps({
   bookId: String,
   bookName: String,
   chapter: Number,
   verse: Number,
-  text: String
+  text: String,
+  bookmarkColor: { type: String, default: null }
 })
 
-const emit = defineEmits(['close', 'navigate-chapter'])
+const emit = defineEmits(['close', 'navigate-chapter', 'update-bookmark-color'])
 
 const copied = ref(false)
+const selectedColor = ref(props.bookmarkColor || null)
+
+function selectColor(color) {
+  selectedColor.value = color
+  emit('update-bookmark-color', color)
+}
 
 async function copyVerse() {
   const content = `"${props.text}" — ${props.bookName} ${props.chapter}:${props.verse}`
@@ -54,6 +74,17 @@ async function shareVerse() {
   }
 }
 
+async function shareAsImageClick() {
+  try {
+    await shareAsImage(props.text, {
+      bookName: props.bookName,
+      chapter: props.chapter,
+      verseNum: props.verse,
+      isDark: isDark.value
+    })
+  } catch { /* user cancelled */ }
+}
+
 function goToChapter() {
   emit('navigate-chapter', props.chapter)
 }
@@ -85,6 +116,22 @@ onUnmounted(() => {
         </button>
       </div>
       <p class="verse-actions-text">{{ text }}</p>
+
+      <!-- Color Picker -->
+      <div class="va-color-picker">
+        <span class="va-color-label">{{ t('bookmark.color.none') }}</span>
+        <div class="va-color-options">
+          <button
+            v-for="(hex, name) in BOOKMARK_COLORS"
+            :key="name"
+            :class="['va-color-dot', { active: selectedColor === name }]"
+            :style="{ background: hex }"
+            @click="selectColor(selectedColor === name ? null : name)"
+            :title="t('bookmark.color.' + name)"
+          ></button>
+        </div>
+      </div>
+
       <div class="verse-actions-buttons">
         <button class="va-btn" @click="copyVerse" :class="{ copied }">
           <svg v-if="!copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -100,6 +147,12 @@ onUnmounted(() => {
             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
           </svg>
           <span>{{ t('verse.share') }}</span>
+        </button>
+        <button class="va-btn" @click="shareAsImageClick" :disabled="generating">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>{{ generating ? '...' : t('verse.shareImage') }}</span>
         </button>
       </div>
     </div>
@@ -222,5 +275,50 @@ onUnmounted(() => {
   border-color: rgba(46, 204, 113, 0.3);
   background: rgba(46, 204, 113, 0.08);
   color: #2ecc71;
+}
+
+/* Color Picker */
+.va-color-picker {
+  padding: 0 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.va-color-label {
+  font-size: 0.72rem;
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.va-color-options {
+  display: flex;
+  gap: 6px;
+}
+
+.va-color-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+  outline: none;
+  opacity: 0.5;
+}
+
+.va-color-dot:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.va-color-dot.active {
+  border-color: var(--color-text);
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 </style>

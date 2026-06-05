@@ -2,8 +2,6 @@
 import { RouterView } from 'vue-router'
 import ThemeToggle from './components/ThemeToggle.vue'
 import InstallBadge from './components/InstallBadge.vue'
-import LanguageToggle from './components/LanguageToggle.vue'
-import AppInfo from './components/AppInfo.vue'
 import { useTheme } from './composables/useTheme.js'
 import { useLanguage } from './composables/useLanguage.js'
 
@@ -14,8 +12,6 @@ useLanguage()
 <template>
   <div class="app">
     <RouterView />
-    <AppInfo />
-    <LanguageToggle />
     <ThemeToggle />
     <InstallBadge />
   </div>
@@ -191,6 +187,14 @@ body {
   --reader-nav-border: var(--border-nav);
   --nav-testament-color: #d4af37;
   --nav-book-color: #ffffff;
+
+  /* Float buttons (AppInfo, LanguageToggle) */
+  --float-btn-bg: rgba(255, 255, 255, 0.1);
+  --float-btn-border: rgba(255, 255, 255, 0.12);
+  --float-btn-color: rgba(255, 255, 255, 0.6);
+  --float-btn-hover-bg: rgba(212, 175, 55, 0.15);
+  --float-btn-hover-border: rgba(212, 175, 55, 0.35);
+  --float-btn-hover-color: #d4af37;
 }
 
 /* ==============================
@@ -312,5 +316,13 @@ body {
   --reader-nav-border: rgba(0, 0, 0, 0.06);
   --nav-testament-color: #d4af37;
   --nav-book-color: #1a1a2e;
+
+  /* Float buttons (AppInfo, LanguageToggle) */
+  --float-btn-bg: rgba(0, 0, 0, 0.06);
+  --float-btn-border: rgba(0, 0, 0, 0.08);
+  --float-btn-color: rgba(0, 0, 0, 0.5);
+  --float-btn-hover-bg: rgba(212, 175, 55, 0.15);
+  --float-btn-hover-border: rgba(212, 175, 55, 0.3);
+  --float-btn-hover-color: #8b7a3a;
 }
 </style>

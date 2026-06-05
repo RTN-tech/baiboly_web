@@ -6,6 +6,7 @@ import GoToVerse from '../views/GoToVerse.vue'
 import Bookmarks from '../views/Bookmarks.vue'
 import NavigatePage from '../views/NavigatePage.vue'
 import AboutPage from '../views/AboutPage.vue'
+import ReadingPlan from '../views/ReadingPlan.vue'
 
 const routes = [
   {
@@ -48,6 +49,11 @@ const routes = [
     path: '/about',
     name: 'About',
     component: AboutPage
+  },
+  {
+    path: '/reading-plan',
+    name: 'ReadingPlan',
+    component: ReadingPlan
   }
 ]
 

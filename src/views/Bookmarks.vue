@@ -6,14 +6,38 @@ import { useReadingHistory } from '../composables/useReadingHistory.js'
 import { useLanguage } from '../composables/useLanguage.js'
 
 const router = useRouter()
-const { bookmarks, bookmarkCount, removeBookmark, clearAll } = useBookmarks()
+const { bookmarks, bookmarkCount, removeBookmark, clearAll, updateBookmarkColor } = useBookmarks()
 const { recentHistory, groupedByDate, historyCount, clearHistory } = useReadingHistory()
 const { t } = useLanguage()
 
+const BOOKMARK_COLORS = {
+  gold: '#d4af37',
+  red: '#e74c3c',
+  blue: '#3498db',
+  green: '#2ecc71',
+  purple: '#9b59b6',
+  pink: '#e91e63'
+}
+
 const activeTab = ref('bookmarks') // 'bookmarks' or 'history'
+const colorFilter = ref(null) // null = all, or color name
 
 const sortedBookmarks = computed(() => {
   return [...bookmarks.value].sort((a, b) => b.dateAdded - a.dateAdded)
+})
+
+const filteredBookmarks = computed(() => {
+  if (!colorFilter.value) return sortedBookmarks.value
+  return sortedBookmarks.value.filter(b => b.color === colorFilter.value)
+})
+
+const colorCounts = computed(() => {
+  const counts = {}
+  for (const bm of bookmarks.value) {
+    const c = bm.color || 'none'
+    counts[c] = (counts[c] || 0) + 1
+  }
+  return counts
 })
 
 function goToVerse(bm) {
@@ -32,6 +56,14 @@ function confirmClearHistory() {
   if (confirm(t('bookmarks.history.clear.confirm'))) {
     clearHistory()
   }
+}
+
+const COLOR_NAMES = ['gold', 'red', 'blue', 'green', 'purple', 'pink', null]
+
+function cycleColor(bm) {
+  const currentIdx = COLOR_NAMES.indexOf(bm.color)
+  const nextColor = COLOR_NAMES[(currentIdx + 1) % COLOR_NAMES.length]
+  updateBookmarkColor(bm.bookId, bm.chapter, bm.verse, nextColor)
 }
 
 function goToChapterEntry(entry) {
@@ -103,9 +135,45 @@ function goToChapterEntry(entry) {
           <button class="bm-browse-btn" @click="router.push('/')">{{ t('bookmarks.browse') }}</button>
         </div>
 
+        <!-- Color Filter -->
+        <div v-if="bookmarkCount > 0" class="bm-filter">
+          <button
+            :class="['bm-filter-btn', { active: !colorFilter }]"
+            @click="colorFilter = null"
+          >
+            <span class="bm-filter-dot all"></span>
+            <span>{{ t('search.filter.all') }}</span>
+            <span class="bm-filter-count">{{ bookmarkCount }}</span>
+          </button>
+          <button
+            v-for="(hex, name) in BOOKMARK_COLORS"
+            :key="name"
+            :class="['bm-filter-btn', { active: colorFilter === name }]"
+            @click="colorFilter = colorFilter === name ? null : name"
+          >
+            <span class="bm-filter-dot" :style="{ background: hex }"></span>
+            <span>{{ t('bookmark.color.' + name) }}</span>
+            <span class="bm-filter-count">{{ colorCounts[name] || 0 }}</span>
+          </button>
+        </div>
+
+        <!-- Filtered empty state -->
+        <div v-if="bookmarkCount > 0 && filteredBookmarks.length === 0" class="bm-empty bm-empty-small">
+          <p>{{ t('search.noResults.hint') }}</p>
+          <button class="bm-browse-btn" @click="colorFilter = null" style="margin-top:12px">{{ t('search.filter.all') }}</button>
+        </div>
+
         <!-- Bookmarks List -->
-        <div v-else class="bm-list">
-          <div v-for="bm in sortedBookmarks" :key="bm.id" class="bm-item" @click="goToVerse(bm)">
+        <div v-if="filteredBookmarks.length > 0" class="bm-list">
+          <div v-for="bm in filteredBookmarks" :key="bm.id" class="bm-item" @click="goToVerse(bm)">
+            <div class="bm-color-col">
+              <button
+                class="bm-color-dot"
+                :style="{ background: bm.color ? BOOKMARK_COLORS[bm.color] : 'transparent', borderColor: bm.color ? BOOKMARK_COLORS[bm.color] : 'var(--color-text-tertiary)' }"
+                @click.stop="cycleColor(bm)"
+                :title="t('bookmark.color.' + (bm.color || 'none'))"
+              ></button>
+            </div>
             <div class="bm-item-content">
               <span class="bm-ref">{{ bm.bookName }} {{ bm.chapter }}:{{ bm.verse }}</span>
               <p class="bm-text">{{ bm.text }}</p>
@@ -328,6 +396,65 @@ function goToChapterEntry(entry) {
   padding: 16px 20px 60px;
 }
 
+/* Color Filter */
+.bm-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bm-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-icon-btn);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--color-text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bm-filter-btn:hover {
+  border-color: var(--border-accent);
+  background: var(--bg-card-hover);
+  color: #d4af37;
+}
+
+.bm-filter-btn.active {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+}
+
+.bm-filter-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bm-filter-dot.all {
+  border: 2px solid var(--color-text-tertiary);
+  background: transparent;
+}
+
+.bm-filter-count {
+  font-size: 0.68rem;
+  opacity: 0.7;
+}
+
+.bm-empty-small {
+  padding: 40px 20px;
+}
+
 /* Empty */
 .bm-empty {
   display: flex;
@@ -460,6 +587,30 @@ function goToChapterEntry(entry) {
 .bm-remove-btn:hover {
   background: rgba(231, 76, 60, 0.1);
   color: #e74c3c;
+}
+
+/* Color dot column */
+.bm-color-col {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+.bm-color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.bm-color-dot:hover {
+  transform: scale(1.35);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
 }
 
 @media (max-width: 600px) {

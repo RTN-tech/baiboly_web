@@ -36,18 +36,18 @@ function goToAbout() {
   justify-content: center;
   width: 36px;
   height: 36px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--float-btn-bg);
+  border: 1px solid var(--float-btn-border);
   border-radius: 50%;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--float-btn-color);
   cursor: pointer;
   transition: all 0.2s;
   backdrop-filter: blur(8px);
 }
 
 .info-btn:hover {
-  background: rgba(212, 175, 55, 0.15);
-  border-color: rgba(212, 175, 55, 0.35);
-  color: #d4af37;
+  background: var(--float-btn-hover-bg);
+  border-color: var(--float-btn-hover-border);
+  color: var(--float-btn-hover-color);
 }
 </style>

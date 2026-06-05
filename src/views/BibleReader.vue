@@ -20,7 +20,7 @@ const props = defineProps({
 
 const router = useRouter()
 const route = useRoute()
-const { isBookmarked, toggleBookmark, bookmarkCount } = useBookmarks()
+const { isBookmarked, toggleBookmark, updateBookmarkColor, bookmarkCount, bookmarks } = useBookmarks()
 const { updateProgress } = useReadingProgress()
 const { addEntry } = useReadingHistory()
 useFontSize()
@@ -134,6 +134,39 @@ function handleVerseClick(verseNum, verseText) {
     text: verseText
   }
   showVerseActions.value = true
+}
+
+const BOOKMARK_BG = {
+  gold: 'rgba(212, 175, 55, 0.12)',
+  red: 'rgba(231, 76, 60, 0.12)',
+  blue: 'rgba(52, 152, 219, 0.12)',
+  green: 'rgba(46, 204, 113, 0.12)',
+  purple: 'rgba(155, 89, 182, 0.12)',
+  pink: 'rgba(233, 30, 99, 0.12)'
+}
+
+function getBookmarkColor(bookId, chapter, verse) {
+  const bm = bookmarks.value.find(
+    b => b.bookId === bookId && b.chapter === chapter && b.verse === verse
+  )
+  return bm ? bm.color : null
+}
+
+function getVerseBgStyle(bookId, chapter, verse) {
+  const color = getBookmarkColor(bookId, chapter, verse)
+  if (!color || !BOOKMARK_BG[color]) return {}
+  return { '--bm-bg': BOOKMARK_BG[color] }
+}
+
+function handleBookmarkColor(color) {
+  if (selectedVerse.value) {
+    updateBookmarkColor(
+      selectedVerse.value.bookId,
+      selectedVerse.value.chapter,
+      selectedVerse.value.verse,
+      color
+    )
+  }
 }
 
 function onTouchStart(e) {
@@ -315,9 +348,9 @@ onMounted(() => {
             :key="verseNum"
             :id="`verse-${verseNum}`"
             :class="['verse', {
-              'verse-target': parseInt(verseNum) === targetVerse,
-              'verse-bookmarked': isBookmarked(bookInfo.id, currentChapter, parseInt(verseNum))
+              'verse-target': parseInt(verseNum) === targetVerse
             }]"
+            :style="getVerseBgStyle(bookInfo.id, currentChapter, parseInt(verseNum))"
             @click="handleVerseClick(parseInt(verseNum), verseText)"
           >
             <button
@@ -381,7 +414,9 @@ onMounted(() => {
       :chapter="selectedVerse.chapter"
       :verse="selectedVerse.verse"
       :text="selectedVerse.text"
+      :bookmark-color="getBookmarkColor(selectedVerse.bookId, selectedVerse.chapter, selectedVerse.verse)"
       @close="showVerseActions = false; selectedVerse = null"
+      @update-bookmark-color="handleBookmarkColor"
     />
 
     <!-- Error -->
@@ -708,6 +743,7 @@ onMounted(() => {
   border-radius: 8px;
   margin: 0;
   position: relative;
+  background: var(--bm-bg, transparent);
 }
 
 .verse:hover {
@@ -791,9 +827,7 @@ onMounted(() => {
   10%, 60% { background: rgba(212, 175, 55, 0.2); border-left: 3px solid #d4af37; }
 }
 
-.verse.verse-bookmarked {
-  background: rgba(212, 175, 55, 0.06);
-}
+
 
 .verse-bookmark-btn {
   display: flex;

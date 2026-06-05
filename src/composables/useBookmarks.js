@@ -33,7 +33,7 @@ export function useBookmarks() {
     )
   }
 
-  function toggleBookmark(bookId, chapter, verse, { bookName, text } = {}) {
+  function toggleBookmark(bookId, chapter, verse, { bookName, text, color } = {}) {
     const idx = bookmarks.value.findIndex(
       b => b.bookId === bookId && b.chapter === chapter && b.verse === verse
     )
@@ -48,10 +48,21 @@ export function useBookmarks() {
         chapter,
         verse,
         text: text || '',
+        color: color || null,
         dateAdded: Date.now()
       })
     }
     save()
+  }
+
+  function updateBookmarkColor(bookId, chapter, verse, color) {
+    const bm = bookmarks.value.find(
+      b => b.bookId === bookId && b.chapter === chapter && b.verse === verse
+    )
+    if (bm) {
+      bm.color = color
+      save()
+    }
   }
 
   function removeBookmark(bookId, chapter, verse) {
@@ -75,6 +86,7 @@ export function useBookmarks() {
     isBookmarked,
     toggleBookmark,
     removeBookmark,
+    updateBookmarkColor,
     clearAll
   }
 }

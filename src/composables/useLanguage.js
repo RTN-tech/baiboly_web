@@ -76,6 +76,7 @@ const TRANSLATIONS = {
   'verse.copy': { mg: 'Soraty', fr: 'Copier', en: 'Copy' },
   'verse.copied': { mg: 'Voasoratra', fr: 'Copié', en: 'Copied' },
   'verse.share': { mg: 'Zara', fr: 'Partager', en: 'Share' },
+  'verse.shareImage': { mg: 'Sary', fr: 'Image', en: 'Image' },
 
   // ===== NAVIGATE PAGE =====
   'nav.title': { mg: 'Vakio haingana', fr: 'Lecture rapide', en: 'Quick navigate' },
@@ -131,8 +132,18 @@ const TRANSLATIONS = {
   'bookmarks.history.start': { mg: 'Manomboka mamaky', fr: 'Commencer à lire', en: 'Start reading' },
   'bookmarks.history.clear.confirm': { mg: 'Hofafana daholo ve ny tantaram-pamakiana?', fr: 'Supprimer tout l\'historique ?', en: 'Delete all reading history?' },
   'bookmarks.tab.bookmarks': { mg: 'Marque-pages', fr: 'Marque-pages', en: 'Bookmarks' },
-  'bookmarks.tab.history': { mg: 'Histoire', fr: 'Historique', en: 'History' },
-  'bookmarks.famakiana': { mg: 'famakiana', fr: 'lectures', en: 'reads' },
+  'bookmarks.tab.history': { mg: 'Histoire', fr: 'Historique', en: 'History' },  'bookmarks.famakiana': {
+    mg: 'famakiana',
+    fr: 'lectures',
+    en: 'reads'
+  },
+  'bookmark.color.none': { mg: 'Tsy misy loko', fr: 'Aucune couleur', en: 'No color' },
+  'bookmark.color.gold': { mg: 'Volamena', fr: 'Doré', en: 'Gold' },
+  'bookmark.color.red': { mg: 'Mena', fr: 'Rouge', en: 'Red' },
+  'bookmark.color.blue': { mg: 'Manga', fr: 'Bleu', en: 'Blue' },
+  'bookmark.color.green': { mg: 'Maitso', fr: 'Vert', en: 'Green' },
+  'bookmark.color.purple': { mg: 'Volomparasy', fr: 'Violet', en: 'Purple' },
+  'bookmark.color.pink': { mg: 'Mavokely', fr: 'Rose', en: 'Pink' },
 
   // ===== INSTALL =====
   'install.title': { mg: 'Ampidiro amin\'ny efijery', fr: 'Installer sur l\'écran', en: 'Install on screen' },
@@ -228,7 +239,30 @@ const TRANSLATIONS = {
     mg: 'Momba ny fampiharana',
     fr: 'À propos de l\'application',
     en: 'About the app'
-  }
+  },
+
+  // ===== READING PLAN =====
+  'plan.title': { mg: 'Plan de lecture', fr: 'Plan de lecture', en: 'Reading plan' },
+  'plan.subtitle': { mg: 'Vakio ny Baiboly amin\'ny fandaharana', fr: 'Lisez la Bible avec un programme', en: 'Read the Bible on a schedule' },
+  'plan.start': { mg: 'Hanomboka', fr: 'Commencer', en: 'Start plan' },
+  'plan.reset': { mg: 'Averina', fr: 'Réinitialiser', en: 'Reset' },
+  'plan.today': { mg: 'Vakina anio', fr: 'Lecture du jour', en: 'Today\'s reading' },
+  'plan.day': { mg: 'Andro', fr: 'Jour', en: 'Day' },
+  'plan.of': { mg: 'amin\'ny', fr: 'sur', en: 'of' },
+  'plan.complete': { mg: 'Voavita', fr: 'Terminé', en: 'Complete' },
+  'plan.progress': { mg: 'Fandrosoana', fr: 'Progression', en: 'Progress' },
+  'plan.readings': { mg: 'vakiana', fr: 'lectures', en: 'readings' },
+  'plan.noplan': { mg: 'Tsy misy plan mavitrika', fr: 'Aucun plan actif', en: 'No active plan' },
+  'plan.choose': { mg: 'Safidio plan', fr: 'Choisir un plan', en: 'Choose a plan' },
+  'plan.1year.name': { mg: 'Baiboly 1 taona', fr: 'Bible en 1 an', en: 'Bible in 1 year' },
+  'plan.1year.desc': { mg: 'Vakio ny Baiboly rehetra amin\'ny 1 taona', fr: 'Lisez toute la Bible en 1 an', en: 'Read the whole Bible in 1 year' },
+  'plan.3months.name': { mg: 'Baiboly 3 volana', fr: 'Bible en 3 mois', en: 'Bible in 3 months' },
+  'plan.3months.desc': { mg: 'Vakio haingana ny Baiboly rehetra', fr: 'Lecture rapide de toute la Bible', en: 'Quick read of the whole Bible' },
+  'plan.nt.name': { mg: 'Testamenta Vaovao', fr: 'Nouveau Testament', en: 'New Testament only' },
+  'plan.nt.desc': { mg: 'Vakio ny TV amin\'ny 3 volana', fr: 'Lisez le NT en 3 mois', en: 'Read the NT in 3 months' },
+  'plan.markdone': { mg: 'Vita anio', fr: 'Terminer aujourd\'hui', en: 'Mark done' },
+  'plan.back': { mg: 'Hiverina', fr: 'Retour', en: 'Back' },
+  'plan.go': { mg: 'Hamaky', fr: 'Lire', en: 'Read now' },
 }
 
 function t(key, params = {}) {

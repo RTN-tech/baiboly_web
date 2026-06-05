@@ -74,10 +74,10 @@ onUnmounted(() => {
   align-items: center;
   gap: 5px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--float-btn-bg);
+  border: 1px solid var(--float-btn-border);
   border-radius: 10px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--float-btn-color);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   font-size: 0.82rem;
@@ -87,9 +87,9 @@ onUnmounted(() => {
 }
 
 .lang-btn:hover {
-  background: rgba(212, 175, 55, 0.15);
-  border-color: rgba(212, 175, 55, 0.35);
-  color: #d4af37;
+  background: var(--float-btn-hover-bg);
+  border-color: var(--float-btn-hover-border);
+  color: var(--float-btn-hover-color);
 }
 
 .lang-current {
