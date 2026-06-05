@@ -1,9 +1,11 @@
 <script setup>
 import { useVerseOfTheDay } from '../composables/useVerseOfTheDay.js'
 import { useRouter } from 'vue-router'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const router = useRouter()
 const { verse, reference } = useVerseOfTheDay()
+const { t } = useLanguage()
 
 function goToVerse() {
   const v = verse.value
@@ -22,7 +24,7 @@ function goToVerse() {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
       </svg>
-      <span>Andininy andavan'andro</span>
+      <span>{{ t('home.verseOfDay') }}</span>
     </div>
     <blockquote class="votd-text">{{ verse.text }}</blockquote>
     <button class="votd-ref" @click="goToVerse">— {{ reference }} →</button>

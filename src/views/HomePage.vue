@@ -7,10 +7,12 @@ import { useScrollReveal } from '../composables/useScrollReveal.js'
 import DownloadButton from '../components/DownloadButton.vue'
 import VerseOfTheDay from '../components/VerseOfTheDay.vue'
 import { useReadingProgress } from '../composables/useReadingProgress.js'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const router = useRouter()
 const { bookmarkCount } = useBookmarks()
 const { lastRead, hasProgress } = useReadingProgress()
+const { t } = useLanguage()
 
 function continueReading() {
   if (!lastRead.value) return
@@ -61,8 +63,8 @@ const displayedBooks = computed(() => {
   return selectedTestament.value === 'taloha' ? oldTestamentBooks.value : newTestamentBooks.value
 })
 
-function toggleTestament(t) {
-  selectedTestament.value = t
+function toggleTestament(val) {
+  selectedTestament.value = val
 }
 </script>
 
@@ -80,11 +82,11 @@ function toggleTestament(t) {
             <line x1="8" y1="11" x2="14" y2="11"></line>
           </svg>
         </div>
-        <h1 class="hero-title" style="animation-delay: 0.15s">Ny Baiboly Masina</h1>
-        <p class="hero-subtitle" style="animation-delay: 0.25s">Vakio ny tenin'Andriamanitra amin'ny fiteny malagasy</p>
+        <h1 class="hero-title" style="animation-delay: 0.15s">{{ t('app.name') }}</h1>
+        <p class="hero-subtitle" style="animation-delay: 0.25s">{{ t('app.subtitle') }}</p>
 
         <!-- Search Icon -->
-        <button class="search-fab" @click="goToSearch" title="Hikaroka andininy (Ctrl+K)" style="animation-delay: 0.35s">
+        <button class="search-fab" @click="goToSearch" :title="t('home.search.placeholder')" style="animation-delay: 0.35s">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
@@ -99,8 +101,8 @@ function toggleTestament(t) {
               </svg>
             </div>
             <div class="jump-btn-text">
-              <span class="jump-btn-title">Vakio haingana</span>
-              <span class="jump-btn-sub">Safidio boky, toko sy andininy</span>
+              <span class="jump-btn-title">{{ t('home.quickJump.title') }}</span>
+              <span class="jump-btn-sub">{{ t('home.quickJump.sub') }}</span>
             </div>
             <svg class="jump-btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"/>
@@ -112,17 +114,17 @@ function toggleTestament(t) {
         <div class="hero-stats" style="animation-delay: 0.55s">
           <div class="stat">
             <span class="stat-number">66</span>
-            <span class="stat-label">Boky</span>
+            <span class="stat-label">{{ t('home.stats.books') }}</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat">
             <span class="stat-number">1,189</span>
-            <span class="stat-label">Tokoboky</span>
+            <span class="stat-label">{{ t('home.stats.chapters') }}</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat" style="position:relative">
             <span class="stat-number">31,102</span>
-            <span class="stat-label">Andininy</span>
+            <span class="stat-label">{{ t('home.stats.verses') }}</span>
           </div>
         </div>
 
@@ -131,7 +133,7 @@ function toggleTestament(t) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
           </svg>
-          <span>Marque-pages</span>
+          <span>{{ t('home.bookmarks') }}</span>
           <span v-if="bookmarkCount > 0" class="hero-bm-badge">{{ bookmarkCount }}</span>
         </button>
 
@@ -142,7 +144,7 @@ function toggleTestament(t) {
               <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
             <div class="continue-text">
-              <span class="continue-label">Hanohy hamaky</span>
+              <span class="continue-label">{{ t('home.continueReading') }}</span>
               <span class="continue-ref">{{ lastRead.bookName }} — Toko {{ lastRead.chapter }}</span>
             </div>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -156,7 +158,7 @@ function toggleTestament(t) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/>
           </svg>
-          <span>Andininy kisendra</span>
+          <span>{{ t('home.randomVerse') }}</span>
         </button>
 
         <!-- Download Button -->
@@ -185,7 +187,7 @@ function toggleTestament(t) {
               <path d="M2 12l10 5 10-5"></path>
             </svg>
           </span>
-          Testameta Taloha
+          {{ t('home.testament.old') }}
           <span class="tab-count">(39)</span>
         </button>
         <button
@@ -197,7 +199,7 @@ function toggleTestament(t) {
               <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
             </svg>
           </span>
-          Testameta Vaovao
+          {{ t('home.testament.new') }}
           <span class="tab-count">(27)</span>
         </button>
       </div>
@@ -219,7 +221,7 @@ function toggleTestament(t) {
             </div>
             <div class="book-info">
               <span class="book-name">{{ book.name }}</span>
-              <span class="book-chapters">{{ book.chapters }} toko</span>
+              <span class="book-chapters">{{ book.chapters }} {{ t('home.chapters') }}</span>
             </div>
           </button>
         </div>

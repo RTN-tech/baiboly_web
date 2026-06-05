@@ -11,6 +11,7 @@ import { getBookData } from '../composables/useOfflineData.js'
 import { useReadingProgress } from '../composables/useReadingProgress.js'
 import { useReadingHistory } from '../composables/useReadingHistory.js'
 import { useFontSize } from '../composables/useFontSize.js'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const props = defineProps({
   bookId: String,
@@ -23,6 +24,7 @@ const { isBookmarked, toggleBookmark, bookmarkCount } = useBookmarks()
 const { updateProgress } = useReadingProgress()
 const { addEntry } = useReadingHistory()
 useFontSize()
+const { t } = useLanguage()
 
 const bookData = ref(null)
 const loading = ref(true)
@@ -204,7 +206,7 @@ onMounted(() => {
     <nav class="reader-nav">
       <div class="nav-inner">
         <div class="nav-left">
-          <button class="nav-icon-btn" @click="router.push('/')" title="Indray">
+          <button class="nav-icon-btn" @click="router.push('/')" :title="t('reader.back')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
@@ -219,7 +221,7 @@ onMounted(() => {
         <div class="nav-right">
           <FontSizeControl compact />
           <DownloadButton compact />
-          <button class="nav-icon-btn" @click="router.push({ name: 'Bookmarks' })" :title="`Marque-pages (${bookmarkCount})`">
+          <button class="nav-icon-btn" @click="router.push({ name: 'Bookmarks' })" :title="`${t('reader.bookmarks')} (${bookmarkCount})`">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
             </svg>
@@ -261,13 +263,13 @@ onMounted(() => {
           @click="goToChapter(prevChapter)"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Toko {{ prevChapter }}
+          {{ t('reader.chapter') }} {{ prevChapter }}
         </button>
         <div v-else></div>
 
         <div class="chapter-dropdown">
           <button class="ch-current" @click="chListRef?.classList.toggle('show')">
-            Toko {{ currentChapter }}
+            {{ t('reader.chapter') }} {{ currentChapter }}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="ch-list" ref="chListRef">
@@ -277,7 +279,7 @@ onMounted(() => {
               :class="['ch-item', { active: parseInt(ch) === currentChapter }]"
               @click="goToChapter(ch); chListRef?.classList.remove('show')"
             >
-              Toko {{ ch }}
+              {{ t('reader.chapter') }} {{ ch }}
             </button>
           </div>
         </div>
@@ -287,7 +289,7 @@ onMounted(() => {
           class="ch-nav-btn"
           @click="goToChapter(nextChapter)"
         >
-          Toko {{ nextChapter }}
+          {{ t('reader.chapter') }} {{ nextChapter }}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
         <div v-else></div>
@@ -295,7 +297,7 @@ onMounted(() => {
 
       <!-- Chapter Progress -->
       <div class="chapter-progress">
-        <div class="cp-label">Toko {{ currentChapter }}</div>
+        <div class="cp-label">{{ t('reader.chapter') }} {{ currentChapter }}</div>
         <div class="cp-bar">
           <div class="cp-fill" :style="{ width: `${(currentChapter / chapters.length) * 100}%` }"></div>
         </div>
@@ -325,7 +327,7 @@ onMounted(() => {
                 bookName: bookInfo.name,
                 text: verseText
               })"
-              :title="isBookmarked(bookInfo.id, currentChapter, parseInt(verseNum)) ? 'Esory ny marque-page' : 'Ampio marque-page'"
+              :title="isBookmarked(bookInfo.id, currentChapter, parseInt(verseNum)) ? t('reader.removeBookmark') : t('reader.addBookmark')"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
@@ -346,8 +348,8 @@ onMounted(() => {
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           <div>
-            <span class="nav-label">Toko teo aloha</span>
-            <span class="nav-chapter">Toko {{ prevChapter }}</span>
+            <span class="nav-label">{{ t('reader.prevChapter') }}</span>
+            <span class="nav-chapter">{{ t('reader.chapter') }} {{ prevChapter }}</span>
           </div>
         </button>
         <button
@@ -356,8 +358,8 @@ onMounted(() => {
           @click="goToChapter(nextChapter)"
         >
           <div>
-            <span class="nav-label">Toko manaraka</span>
-            <span class="nav-chapter">Toko {{ nextChapter }}</span>
+            <span class="nav-label">{{ t('reader.nextChapter') }}</span>
+            <span class="nav-chapter">{{ t('reader.chapter') }} {{ nextChapter }}</span>
           </div>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
@@ -385,9 +387,9 @@ onMounted(() => {
     <!-- Error -->
     <div class="error-state" v-if="error">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <h2>Tsy hita ilay boky</h2>
+      <h2>{{ t('reader.error.notfound') }}</h2>
       <p>{{ error }}</p>
-      <button class="back-btn" @click="router.push('/')">Miverina any an-trano</button>
+      <button class="back-btn" @click="router.push('/')">{{ t('reader.backHome') }}</button>
     </div>
   </div>
 </template>
@@ -684,10 +686,10 @@ onMounted(() => {
 
 .chapter-number {
   font-family: 'Playfair Display', serif;
-  font-size: 1.6rem;
+  font-size: calc(var(--reader-font-size, 1rem) * 1.6);
   font-weight: 700;
   color: var(--color-chapter-number);
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, font-size 0.2s ease;
 }
 
 .verses {
@@ -831,7 +833,7 @@ onMounted(() => {
 
 .verse-number {
   font-family: 'Inter', sans-serif;
-  font-size: 0.75rem;
+  font-size: calc(var(--reader-font-size, 1rem) * 0.75);
   font-weight: 700;
   color: var(--color-verse-number);
   min-width: 24px;
@@ -842,10 +844,10 @@ onMounted(() => {
 
 .verse-text {
   font-family: 'Inter', sans-serif;
-  font-size: 1rem;
+  font-size: var(--reader-font-size, 1rem);
   color: var(--color-verse-text);
   line-height: 1.8;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, font-size 0.2s ease;
   flex: 1;
 }
 
@@ -924,9 +926,9 @@ onMounted(() => {
 @media (max-width: 600px) {
   .reader-content { padding: 16px 12px 40px; }
   .verses-container { padding: 24px 16px; border-radius: 12px; }
-  .chapter-number { font-size: 1.3rem; }
-  .verse-text { font-size: 0.9rem; }
-  .verse-number { min-width: 20px; font-size: 0.7rem; }
+  .chapter-number { font-size: calc(var(--reader-font-size, 1rem) * 1.3); }
+  .verse-text { font-size: var(--reader-font-size, 0.9rem); }
+  .verse-number { min-width: 20px; font-size: calc(var(--reader-font-size, 1rem) * 0.7); }
   .chapter-nav-bottom { flex-direction: column; }
   .ch-nav-btn.large { min-width: auto; width: 100%; }
   .book-nav { flex-direction: column; align-items: stretch; }

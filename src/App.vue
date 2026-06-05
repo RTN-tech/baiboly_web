@@ -2,14 +2,18 @@
 import { RouterView } from 'vue-router'
 import ThemeToggle from './components/ThemeToggle.vue'
 import InstallBadge from './components/InstallBadge.vue'
+import LanguageToggle from './components/LanguageToggle.vue'
 import { useTheme } from './composables/useTheme.js'
+import { useLanguage } from './composables/useLanguage.js'
 
 useTheme()
+useLanguage()
 </script>
 
 <template>
   <div class="app">
     <RouterView />
+    <LanguageToggle />
     <ThemeToggle />
     <InstallBadge />
   </div>

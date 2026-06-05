@@ -1,7 +1,9 @@
 <script setup>
 import { useFontSize } from '../composables/useFontSize.js'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const { fontSize, increaseSize, decreaseSize, resetSize } = useFontSize()
+const { t } = useLanguage()
 
 defineProps({
   compact: { type: Boolean, default: false }
@@ -14,14 +16,14 @@ defineProps({
       class="fs-btn"
       :disabled="fontSize <= 12"
       @click="decreaseSize"
-      title="Henao kely ny soratra"
+      :title="t('reader.font.decrease')"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
     </button>
 
-    <div class="fs-indicator" @click="resetSize" title="Averina amin'ny tany am-boalohany">
+    <div class="fs-indicator" @click="resetSize" :title="t('reader.font.reset')">
       <span class="fs-value">{{ fontSize }}</span>
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
@@ -32,7 +34,7 @@ defineProps({
       class="fs-btn"
       :disabled="fontSize >= 28"
       @click="increaseSize"
-      title="Henao lehibe ny soratra"
+      :title="t('reader.font.increase')"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>

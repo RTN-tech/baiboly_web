@@ -2,8 +2,10 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { books } from '../data/books.js'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const router = useRouter()
+const { t } = useLanguage()
 
 const oldTestamentBooks = computed(() => books.filter(b => b.testament === 'taloha'))
 const newTestamentBooks = computed(() => books.filter(b => b.testament === 'vaovao'))
@@ -21,8 +23,8 @@ function goHome() {
 }
 
 const testaments = [
-  { id: 'taloha', label: 'Testameta Taloha', icon: 'ot', count: 39 },
-  { id: 'vaovao', label: 'Testameta Vaovao', icon: 'nt', count: 27 }
+  { id: 'taloha', label: () => t('home.testament.old'), icon: 'ot', count: 39 },
+  { id: 'vaovao', label: () => t('home.testament.new'), icon: 'nt', count: 27 }
 ]
 
 const availableBooks = computed(() => {
@@ -95,8 +97,8 @@ function navigate() {
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
       </button>
-      <h1 class="nav-title">Vakio haingana</h1>
-      <button v-if="selectedTestament" class="nav-reset-btn" @click="resetAll" title="Hanomboka indray">
+      <h1 class="nav-title">{{ t('nav.title') }}</h1>
+      <button v-if="selectedTestament" class="nav-reset-btn" @click="resetAll" :title="t('nav.reset')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
         </svg>
@@ -132,21 +134,21 @@ function navigate() {
         <!-- Step 1: Choose Testament -->
         <section v-if="!selectedTestament" key="testament" class="step-section">
           <div class="step-header">
-            <span class="step-badge">Dingana 1</span>
-            <h2 class="step-title">Fidio ny Testamenta</h2>
-            <p class="step-desc">Safidio ny Testamenta tianao vakiana</p>
+            <span class="step-badge">{{ t('nav.step') }} 1</span>
+            <h2 class="step-title">{{ t('nav.step1.title') }}</h2>
+            <p class="step-desc">{{ t('nav.step1.desc') }}</p>
           </div>
           <div class="testament-cards">
             <button
-              v-for="(t, i) in testaments"
-              :key="t.id"
+              v-for="(tm, i) in testaments"
+              :key="tm.id"
               class="testament-card"
-              :class="{ 'testament-ot': t.id === 'taloha', 'testament-nt': t.id === 'vaovao' }"
+              :class="{ 'testament-ot': tm.id === 'taloha', 'testament-nt': tm.id === 'vaovao' }"
               :style="{ animationDelay: `${i * 0.12}s` }"
-              @click="selectedTestament = t.id"
+              @click="selectedTestament = tm.id"
             >
               <div class="testament-icon">
-                <svg v-if="t.id === 'taloha'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg v-if="tm.id === 'taloha'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
                 </svg>
                 <svg v-else width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -154,8 +156,8 @@ function navigate() {
                 </svg>
               </div>
               <div class="testament-info">
-                <span class="testament-name">{{ t.label }}</span>
-                <span class="testament-count">{{ t.count }} boky</span>
+                <span class="testament-name">{{ tm.label() }}</span>
+                <span class="testament-count">{{ tm.count }} {{ t('home.stats.books') }}</span>
               </div>
               <svg class="testament-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
@@ -167,9 +169,9 @@ function navigate() {
         <!-- Step 2: Choose Book -->
         <section v-else-if="selectedTestament && !selectedBookId" key="book" class="step-section">
           <div class="step-header">
-            <span class="step-badge">Dingana 2</span>
-            <h2 class="step-title">Fidio ny boky</h2>
-            <p class="step-desc">{{ selectedTestament === 'taloha' ? 'Testameta Taloha' : 'Testameta Vaovao' }} — {{ availableBooks.length }} boky</p>
+            <span class="step-badge">{{ t('nav.step') }} 2</span>
+            <h2 class="step-title">{{ t('nav.step2.title') }}</h2>
+            <p class="step-desc">{{ selectedTestament === 'taloha' ? t('home.testament.old') : t('home.testament.new') }} — {{ availableBooks.length }} {{ t('home.stats.books') }}</p>
           </div>
           <div class="books-scroll">
             <button
@@ -185,7 +187,7 @@ function navigate() {
                 </svg>
               </div>
               <span class="book-sel-name">{{ book.name }}</span>
-              <span class="book-sel-chapters">{{ book.chapters }} toko</span>
+              <span class="book-sel-chapters">{{ book.chapters }} {{ t('home.chapters') }}</span>
             </button>
           </div>
         </section>
@@ -193,11 +195,11 @@ function navigate() {
         <!-- Step 3: Choose Chapter -->
         <section v-else-if="selectedBookId && !selectedChapter" key="chapter" class="step-section">
           <div class="step-header">
-            <span class="step-badge">Dingana 3</span>
-            <h2 class="step-title">Fidio ny toko</h2>
+            <span class="step-badge">{{ t('nav.step') }} 3</span>
+            <h2 class="step-title">{{ t('nav.step3.title') }}</h2>
             <p class="step-desc">
               <button class="back-step-link" @click="selectedBookId = ''; resetAll()">← {{ selectedBook?.name }}</button>
-              — {{ availableChapters.length }} toko
+              — {{ availableChapters.length }} {{ t('home.chapters') }}
             </p>
           </div>
           <div class="chapters-grid">
@@ -216,18 +218,18 @@ function navigate() {
         <!-- Step 4: Choose Verse -->
         <section v-else-if="selectedChapter && !selectedVerse" key="verse" class="step-section">
           <div class="step-header">
-            <span class="step-badge">Dingana 4</span>
-            <h2 class="step-title">Fidio ny andininy</h2>
+            <span class="step-badge">{{ t('nav.step') }} 4</span>
+            <h2 class="step-title">{{ t('nav.step4.title') }}</h2>
             <p class="step-desc">
-              <span class="back-step-link" @click="selectedChapter = ''">← {{ selectedBook?.name }} toko {{ selectedChapter }}</span>
-              <template v-if="loadingVerses">— mikaroka andininy...</template>
-              <template v-else>— {{ availableVerses.length }} andininy</template>
+              <span class="back-step-link" @click="selectedChapter = ''">← {{ selectedBook?.name }} {{ t('reader.chapter') }} {{ selectedChapter }}</span>
+              <template v-if="loadingVerses">— {{ t('nav.loading.verses') }}</template>
+              <template v-else>— {{ availableVerses.length }} {{ t('nav.final.verse').toLowerCase() }}</template>
             </p>
           </div>
           <div class="verses-grid">
             <div v-if="loadingVerses" class="verses-loading">
               <span class="loader"></span>
-              <p>Am-panokafana ny boky...</p>
+              <p>{{ t('nav.loading.book') }}</p>
             </div>
             <button
               v-for="(v, i) in availableVerses"
@@ -249,26 +251,26 @@ function navigate() {
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/>
               </svg>
             </div>
-            <h2 class="final-title">Vonona ny hamaky</h2>
+            <h2 class="final-title">{{ t('nav.final.title') }}</h2>
             <div class="final-ref">
               <span class="final-book">{{ selectedBook?.name }}</span>
               <span class="final-sep">—</span>
-              <span class="final-chapter">Toko {{ selectedChapter }}</span>
+              <span class="final-chapter">{{ t('reader.chapter') }} {{ selectedChapter }}</span>
               <span class="final-sep">—</span>
-              <span class="final-verse">Andininy {{ selectedVerse }}</span>
+              <span class="final-verse">{{ t('nav.final.verse') }} {{ selectedVerse }}</span>
             </div>
             <div class="final-actions">
               <button class="final-go-btn" @click="navigate">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
                 </svg>
-                <span>Hamaky</span>
+                <span>{{ t('nav.final.read') }}</span>
               </button>
               <button class="final-change-btn" @click="resetAll">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
                 </svg>
-                <span>Hanova</span>
+                <span>{{ t('nav.final.change') }}</span>
               </button>
             </div>
           </div>

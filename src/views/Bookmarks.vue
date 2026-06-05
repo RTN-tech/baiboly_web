@@ -3,10 +3,12 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookmarks } from '../composables/useBookmarks.js'
 import { useReadingHistory } from '../composables/useReadingHistory.js'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const router = useRouter()
 const { bookmarks, bookmarkCount, removeBookmark, clearAll } = useBookmarks()
 const { recentHistory, groupedByDate, historyCount, clearHistory } = useReadingHistory()
+const { t } = useLanguage()
 
 const activeTab = ref('bookmarks') // 'bookmarks' or 'history'
 
@@ -20,14 +22,14 @@ function goToVerse(bm) {
 
 function confirmClear() {
   if (bookmarkCount.value === 0) return
-  if (confirm('Hofafana daholo ve ny marque-pages rehetra?')) {
+  if (confirm(t('bookmarks.clear.confirm'))) {
     clearAll()
   }
 }
 
 function confirmClearHistory() {
   if (historyCount.value === 0) return
-  if (confirm('Hofafana daholo ve ny tantaram-pamakiana?')) {
+  if (confirm(t('bookmarks.history.clear.confirm'))) {
     clearHistory()
   }
 }
@@ -46,20 +48,20 @@ function goToChapterEntry(entry) {
     <!-- Header -->
     <header class="bm-header">
       <div class="bm-header-inner">
-        <button class="bm-back-btn" @click="router.push('/')" title="Indray">
+        <button class="bm-back-btn" @click="router.push('/')" :title="t('reader.back')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
         </button>
         <div class="bm-header-title">
-          <h1>{{ activeTab === 'bookmarks' ? 'Marque-pages' : 'Tantara' }}</h1>
-          <span class="bm-count">{{ activeTab === 'bookmarks' ? bookmarkCount + ' andininy' : historyCount + ' famakiana' }}</span>
+          <h1>{{ activeTab === 'bookmarks' ? t('bookmarks.title') : t('bookmarks.history.title') }}</h1>
+          <span class="bm-count">{{ activeTab === 'bookmarks' ? bookmarkCount + ' ' + t('bookmarks.verses') : historyCount + ' ' + t('bookmarks.famakiana') }}</span>
         </div>
         <button
           v-if="(activeTab === 'bookmarks' && bookmarkCount > 0) || (activeTab === 'history' && historyCount > 0)"
           class="bm-clear-btn"
           @click="activeTab === 'bookmarks' ? confirmClear() : confirmClearHistory()"
-          :title="activeTab === 'bookmarks' ? 'Fafao daholo' : 'Fafao ny tantara'"
+          :title="activeTab === 'bookmarks' ? t('bookmarks.clear') : t('bookmarks.history.title')"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -74,14 +76,14 @@ function goToChapterEntry(entry) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
         </svg>
-        <span>Marque-pages</span>
+        <span>{{ t('bookmarks.tab.bookmarks') }}</span>
         <span v-if="bookmarkCount > 0" class="tab-badge">{{ bookmarkCount }}</span>
       </button>
       <button :class="['bm-tab', { active: activeTab === 'history' }]" @click="activeTab = 'history'">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
         </svg>
-        <span>Histoire</span>
+        <span>{{ t('bookmarks.tab.history') }}</span>
         <span v-if="historyCount > 0" class="tab-badge">{{ historyCount }}</span>
       </button>
     </div>
@@ -96,9 +98,9 @@ function goToChapterEntry(entry) {
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
             </svg>
           </div>
-          <h2>Tsy misy marque-pages</h2>
-          <p>Tsindrio ny kisary <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> eo akaikin'ny andininy</p>
-          <button class="bm-browse-btn" @click="router.push('/')">Hijery ny boky</button>
+          <h2>{{ t('bookmarks.empty.title') }}</h2>
+          <p>{{ t('bookmarks.empty.desc') }} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> eo akaikin'ny andininy</p>
+          <button class="bm-browse-btn" @click="router.push('/')">{{ t('bookmarks.browse') }}</button>
         </div>
 
         <!-- Bookmarks List -->
@@ -112,7 +114,7 @@ function goToChapterEntry(entry) {
             <button
               class="bm-remove-btn"
               @click.stop="removeBookmark(bm.bookId, bm.chapter, bm.verse)"
-              title="Esory"
+              :title="t('bookmarks.remove')"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -131,9 +133,9 @@ function goToChapterEntry(entry) {
               <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
           </div>
-          <h2>Tsy misy tantara</h2>
-          <p>Hisy ny tantaran'ny vakinao amin'ity pejy ity rehefa mamaky Baiboly</p>
-          <button class="bm-browse-btn" @click="router.push('/')">Manomboka mamaky</button>
+          <h2>{{ t('bookmarks.history.empty.title') }}</h2>
+          <p>{{ t('bookmarks.history.empty.desc') }}</p>
+          <button class="bm-browse-btn" @click="router.push('/')">{{ t('bookmarks.history.start') }}</button>
         </div>
 
         <!-- History List grouped by date -->
@@ -147,8 +149,8 @@ function goToChapterEntry(entry) {
               @click="goToChapterEntry(entry)"
             >
               <div class="bm-item-content">
-                <span class="bm-ref">{{ entry.bookName }} Toko {{ entry.chapter }}</span>
-                <span class="bm-date">{{ entry.verse > 1 ? 'Andininy ' + entry.verse : 'Toko ' + entry.chapter }}</span>
+                <span class="bm-ref">{{ entry.bookName }} {{ t('reader.chapter') }} {{ entry.chapter }}</span>
+                <span class="bm-date">{{ entry.verse > 1 ? t('reader.chapter') + ' ' + entry.verse : t('reader.chapter') + ' ' + entry.chapter }}</span>
               </div>
             </div>
           </div>

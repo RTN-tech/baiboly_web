@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useOfflineData } from '../composables/useOfflineData.js'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const props = defineProps({
   compact: { type: Boolean, default: false }
@@ -14,6 +15,7 @@ const {
   downloadAll,
   checkOfflineStatus
 } = useOfflineData()
+const { t } = useLanguage()
 
 const showTooltip = ref(false)
 
@@ -32,7 +34,7 @@ async function handleDownload() {
 
 function formatProgress() {
   const pct = Math.round((downloadProgress.value.loaded / downloadProgress.value.total) * 100)
-  return `${downloadProgress.value.loaded}/${downloadProgress.value.total} boky (${pct}%)`
+  return t('download.progress', { loaded: downloadProgress.value.loaded, total: downloadProgress.value.total, pct })
 }
 </script>
 
@@ -43,7 +45,7 @@ function formatProgress() {
       :class="{ downloading: isDownloading, complete: downloadComplete }"
       :disabled="isDownloading"
       @click="handleDownload"
-      :title="downloadComplete ? 'Efa voasintona ny Baiboly' : 'Sintono ny Baiboly ho an\'ny fampiasana tsy misy Internet'"
+      :title="downloadComplete ? t('download.complete.tooltip') : t('download.tooltip')"
     >
       <!-- Spinny loader when downloading -->
       <svg v-if="isDownloading" class="spin-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -63,12 +65,12 @@ function formatProgress() {
       </svg>
 
       <span class="download-btn-text">
-        <template v-if="isDownloading && compact">Sintona</template>
-        <template v-else-if="isDownloading">Sintona ...</template>
-        <template v-else-if="downloadComplete && compact">Voasintona</template>
-        <template v-else-if="downloadComplete">Voasintona</template>
+        <template v-if="isDownloading && compact">{{ t('download.downloading').split('...')[0] }}</template>
+        <template v-else-if="isDownloading">{{ t('download.downloading') }}</template>
+        <template v-else-if="downloadComplete && compact">{{ t('download.complete') }}</template>
+        <template v-else-if="downloadComplete">{{ t('download.complete') }}</template>
         <template v-else-if="compact"></template>
-        <template v-else>Télécharger</template>
+        <template v-else>{{ t('download.label') }}</template>
       </span>
     </button>
 
@@ -88,7 +90,7 @@ function formatProgress() {
 
     <!-- Tooltip "déjà téléchargé" -->
     <Transition name="tooltip">
-      <div v-if="showTooltip" class="download-tooltip">Efa voasintona ny Baiboly rehetra</div>
+      <div v-if="showTooltip" class="download-tooltip">{{ t('download.complete.tooltip') }}</div>
     </Transition>
   </div>
 </template>

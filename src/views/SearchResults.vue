@@ -2,10 +2,12 @@
 import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useSearch } from '../services/searchService.js'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const router = useRouter()
 const route = useRoute()
 const { isIndexing, indexingProgress, indexReady, buildIndex, search } = useSearch()
+const { t } = useLanguage()
 
 const searchQuery = ref('')
 const results = ref([])
@@ -107,7 +109,7 @@ watch(() => route.query.q, (newQ) => {
     <!-- Sticky Search Header -->
     <header class="search-header">
       <div class="search-header-inner">
-        <button class="back-btn-icon" @click="router.push('/')" title="Miverina any an-trano">
+        <button class="back-btn-icon" @click="router.push('/')" :title="t('reader.backHome')">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
@@ -123,7 +125,7 @@ watch(() => route.query.q, (newQ) => {
               v-model="searchQuery"
               type="text"
               class="search-input"
-              placeholder="Hikaroka andininy ..."
+              :placeholder="t('search.placeholder')"
               @input="handleInput"
               @keydown.enter="handleSubmit"
             />
@@ -141,11 +143,11 @@ watch(() => route.query.q, (newQ) => {
       <!-- Indexing Progress -->
       <div v-if="isIndexing" class="indexing-progress">
         <div class="loader"></div>
-        <p>Am-panokafana ny boky ...</p>
+        <p>{{ t('search.indexing') }}</p>
         <div class="progress-bar">
           <div class="progress-fill" :style="{ width: `${(indexingProgress.loaded / indexingProgress.total) * 100}%` }"></div>
         </div>
-        <p class="progress-text">{{ indexingProgress.loaded }} / {{ indexingProgress.total }} boky</p>
+        <p class="progress-text">{{ indexingProgress.loaded }} / {{ indexingProgress.total }} {{ t('search.books') }}</p>
       </div>
 
       <!-- Initial state -->
@@ -155,12 +157,12 @@ watch(() => route.query.q, (newQ) => {
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
         </div>
-        <h2>Hikaroka ny Baiboly</h2>
-        <p>Amin'ny teny malagasy, soraty eto ny teny tadiavina</p>
+        <h2>{{ t('search.empty.title') }}</h2>
+        <p>{{ t('search.empty.desc') }}</p>
         <div class="search-tips">
-          <span class="tip">Ohatra: <button class="tip-btn" @click="searchQuery = 'fitiavana'; performSearch()">fitiavana</button></span>
-          <span class="tip">Ohatra: <button class="tip-btn" @click="searchQuery = 'fahasoavana'; performSearch()">fahasoavana</button></span>
-          <span class="tip">Ohatra: <button class="tip-btn" @click="searchQuery = 'fanavotana'; performSearch()">fanavotana</button></span>
+          <span class="tip">{{ t('search.example') }} <button class="tip-btn" @click="searchQuery = 'fitiavana'; performSearch()">{{ t('search.tip.fitiavana') }}</button></span>
+          <span class="tip">{{ t('search.example') }} <button class="tip-btn" @click="searchQuery = 'fahasoavana'; performSearch()">{{ t('search.tip.fahasoavana') }}</button></span>
+          <span class="tip">{{ t('search.example') }} <button class="tip-btn" @click="searchQuery = 'fanavotana'; performSearch()">{{ t('search.tip.fanavotana') }}</button></span>
         </div>
       </div>
 
@@ -171,28 +173,28 @@ watch(() => route.query.q, (newQ) => {
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="8" y1="11" x2="14" y2="11"/>
           </svg>
         </div>
-        <h2>Tsy nisy valiny</h2>
-        <p>Tsy nisy andininy hitanay tamin'ny teny <strong>"{{ searchQuery }}"</strong></p>
-        <p class="hint">Andramo amin'ny teny hafa</p>
+        <h2>{{ t('search.noResults.title') }}</h2>
+        <p>{{ t('search.noResults.text') }} <strong>"{{ searchQuery }}"</strong></p>
+        <p class="hint">{{ t('search.noResults.hint') }}</p>
       </div>
 
       <!-- Filter Tabs -->
       <div v-if="hasSearched && totalResults > 0" class="search-filters">
-        <button :class="['filter-btn', { active: searchFilter === '' }]" @click="searchFilter = ''; applyFilter()">Rehetra</button>
-        <button :class="['filter-btn', { active: searchFilter === 'taloha' }]" @click="searchFilter = 'taloha'; applyFilter()">Testameta Taloha</button>
-        <button :class="['filter-btn', { active: searchFilter === 'vaovao' }]" @click="searchFilter = 'vaovao'; applyFilter()">Testameta Vaovao</button>
+        <button :class="['filter-btn', { active: searchFilter === '' }]" @click="searchFilter = ''; applyFilter()">{{ t('search.filter.all') }}</button>
+        <button :class="['filter-btn', { active: searchFilter === 'taloha' }]" @click="searchFilter = 'taloha'; applyFilter()">{{ t('search.filter.old') }}</button>
+        <button :class="['filter-btn', { active: searchFilter === 'vaovao' }]" @click="searchFilter = 'vaovao'; applyFilter()">{{ t('search.filter.new') }}</button>
       </div>
 
       <!-- Results -->
       <div v-if="hasSearched && results.length > 0" class="results-container">
         <div class="results-header">
-          <span class="results-count">{{ totalResults }} andininy hita</span>
+          <span class="results-count">{{ totalResults }} {{ t('search.results.count') }}</span>
         </div>
 
         <div v-for="group in results" :key="group.bookId" class="book-group">
           <div class="book-group-header">
             <span class="book-group-name">{{ group.bookName }}</span>
-            <span class="book-group-count">{{ group.verses.length }} andininy</span>
+            <span class="book-group-count">{{ group.verses.length }} {{ t('search.verses') }}</span>
           </div>
 
           <div class="verse-results">
@@ -208,7 +210,7 @@ watch(() => route.query.q, (newQ) => {
           </div>
 
           <div v-if="group.truncated" class="truncated-notice">
-            <span>Misy {{ group.totalVerses }} andininy hafa ...</span>
+            <span>{{ t('search.more', { count: group.totalVerses }) }}</span>
           </div>
         </div>
       </div>

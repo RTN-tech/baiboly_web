@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useInstallPrompt } from '../composables/useInstallPrompt.js'
+import { useLanguage } from '../composables/useLanguage.js'
 
 const { canInstall, isInstalled, promptInstall } = useInstallPrompt()
 
+const { t } = useLanguage()
 const dismissed = ref(false)
 const installing = ref(false)
 
@@ -39,8 +41,8 @@ function handleDismiss() {
           </svg>
         </div>
         <div class="install-badge-text">
-          <span class="install-badge-title">Ampidiro amin'ny efijery</span>
-          <span class="install-badge-sub">Tadiavo haingana kokoa</span>
+          <span class="install-badge-title">{{ t('install.title') }}</span>
+          <span class="install-badge-sub">{{ t('install.sub') }}</span>
         </div>
         <button
           class="install-badge-btn"
@@ -52,7 +54,7 @@ function handleDismiss() {
         <button
           class="install-badge-close"
           @click="handleDismiss"
-          title="Aza atao izao"
+          :title="t('install.dismiss')"
           aria-label="Dismiss"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
