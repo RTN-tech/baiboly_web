@@ -16,9 +16,9 @@ try {
 const TRANSLATIONS = {
   // ===== GLOBAL =====
   'app.name': {
-    mg: 'Ny Baiboly Masina',
-    fr: 'La Sainte Bible',
-    en: 'The Holy Bible'
+    mg: 'Ny Baiboliko',
+    fr: 'Ny Baiboliko',
+    en: 'Ny Baiboliko'
   },
   'app.subtitle': {
     mg: "Vakio ny tenin'Andriamanitra amin'ny fiteny malagasy",
@@ -146,11 +146,89 @@ const TRANSLATIONS = {
   'download.complete.tooltip': { mg: 'Efa voasintona ny Baiboly rehetra', fr: 'Toute la Bible est téléchargée', en: 'All Bible books downloaded' },
   'download.tooltip': { mg: 'Sintono ny Baiboly ho an\'ny fampiasana tsy misy Internet', fr: 'Télécharger la Bible pour utilisation hors-ligne', en: 'Download the Bible for offline use' },
   'download.progress': { mg: '{{loaded}}/{{total}} boky ({{pct}}%)', fr: '{{loaded}}/{{total}} livres ({{pct}}%)', en: '{{loaded}}/{{total}} books ({{pct}}%)' },
-  'download.error': { mg: 'Tsy afaka namaky ilay boky', fr: 'Erreur de téléchargement', en: 'Download error' },
+  'download.error': { mg: 'Tsy afaka namaky ilay boky', fr: 'Erreur de téléchargement', en: 'Download error' },  // ===== THEME =====
+  'theme.dark': {
+    mg: 'Mifamadika ho maivana',
+    fr: 'Mode clair',
+    en: 'Light mode'
+  },
+  'theme.light': {
+    mg: 'Mifamadika ho maizina',
+    fr: 'Mode sombre',
+    en: 'Dark mode'
+  },
 
-  // ===== THEME =====
-  'theme.dark': { mg: 'Mifamadika ho maivana', fr: 'Mode clair', en: 'Light mode' },
-  'theme.light': { mg: 'Mifamadika ho maizina', fr: 'Mode sombre', en: 'Dark mode' }
+  // ===== APP INFO / ABOUT =====
+  'app.info.title': {
+    mg: 'Momba ny fampiharana',
+    fr: 'À propos',
+    en: 'About'
+  },
+  'app.info.version': {
+    mg: 'Dikanteny',
+    fr: 'Version',
+    en: 'Version'
+  },
+  'app.info.description': {
+    mg: 'Fampiharana mamakiana ny Baiboly Masina amin\'ny teny malagasy. Hita ao ny Testamenta Taloha sy Vaovao, miaraka amin\'ny fikarohana sy marque-page.',
+    fr: 'Application de lecture de la Sainte Bible en malgache. Contient l\'Ancien et le Nouveau Testament, avec recherche et marque-pages.',
+    en: 'A Bible reading app in Malagasy. Contains the Old and New Testaments, with search and bookmarks.'
+  },
+  'app.info.creator': {
+    mg: 'Mpamorona',
+    fr: 'Créateur',
+    en: 'Creator'
+  },
+  'app.info.phone': {
+    mg: 'Telefaonina',
+    fr: 'Téléphone',
+    en: 'Phone'
+  },
+  'app.info.email': {
+    mg: 'Mailaka',
+    fr: 'Email',
+    en: 'Email'
+  },
+  'app.info.tech': {
+    mg: 'Vue.js 3 + Vite',
+    fr: 'Vue.js 3 + Vite',
+    en: 'Vue.js 3 + Vite'
+  },
+  'app.info.close': {
+    mg: 'Hidihidy',
+    fr: 'Fermer',
+    en: 'Close'
+  },
+  'app.info.social': {
+    mg: 'Hifandraisa',
+    fr: 'Réseaux sociaux',
+    en: 'Social media'
+  },
+  'app.info.whatsapp': {
+    mg: 'WhatsApp',
+    fr: 'WhatsApp',
+    en: 'WhatsApp'
+  },
+  'app.info.facebook': {
+    mg: 'Facebook',
+    fr: 'Facebook',
+    en: 'Facebook'
+  },
+  'app.info.linkedin': {
+    mg: 'LinkedIn',
+    fr: 'LinkedIn',
+    en: 'LinkedIn'
+  },
+  'app.info.back': {
+    mg: 'Hiverina',
+    fr: 'Retour',
+    en: 'Back'
+  },
+  'app.info.about': {
+    mg: 'Momba ny fampiharana',
+    fr: 'À propos de l\'application',
+    en: 'About the app'
+  }
 }
 
 function t(key, params = {}) {

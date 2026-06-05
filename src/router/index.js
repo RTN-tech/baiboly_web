@@ -5,6 +5,7 @@ import SearchResults from '../views/SearchResults.vue'
 import GoToVerse from '../views/GoToVerse.vue'
 import Bookmarks from '../views/Bookmarks.vue'
 import NavigatePage from '../views/NavigatePage.vue'
+import AboutPage from '../views/AboutPage.vue'
 
 const routes = [
   {
@@ -42,6 +43,11 @@ const routes = [
     path: '/navigate',
     name: 'Navigate',
     component: NavigatePage
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: AboutPage
   }
 ]
 
